@@ -1,0 +1,125 @@
+#topc{
+    position:absolute;
+    right:20px;
+    top:20px;
+    /* outline:1px solid white; */
+    padding:10px;
+    padding-top:3px;
+}
+body{
+    background-color: white;
+    margin:0;
+    padding:0;
+    font-family:"Segoe UI";
+    color:white;
+    line-height:1.1;
+    font-size:16px;
+}
+img{
+    width:100vw;
+    height:100vh;
+    z-index: -1;
+    position:absolute;
+}
+#corner{
+    position:absolute;
+    bottom:80px;
+    padding-right:30px;
+    right:0;
+    color:white;
+    width:100vw;
+    display:flex;
+    flex-flow:row nowrap;
+    box-sizing: border-box;
+    align-items:flex-end;
+}
+#time,#date{
+    text-align: right;
+}
+#time{
+    font-size:50px;
+    font-family:monospace;
+}
+#date{
+    font-size:30px;
+}
+.pbar{
+    width:240px;
+    height:20px;
+    outline:1px solid white;
+    margin-left:10px;
+    position:relative;
+    font-family:monospace;
+    font-size:13px;
+}
+.bar{
+    height:20px;
+    background-color:white;
+    width:20%;
+    position:absolute;
+    overflow:hidden;
+    color:black;
+    white-space:nowrap;
+    padding-left:3px;
+    line-height:20px;
+    box-sizing: border-box;
+}
+.bartext{
+    padding-left:3px;
+    line-height:20px;
+}
+.entry{
+    display:flex;
+    flex-flow:row nowrap;
+    width:100%;
+    justify-content: flex-end;
+    line-height: 20px;
+}
+*{
+    user-select:none;
+}
+.stat,li{
+    font-family:monospace;
+    font-size:13px;
+}
+table, td, th {
+    border: 1px solid white;
+    font-family:monospace;
+    font-size:13px;
+    line-height:20px;
+    padding:3px;
+    overflow:hidden;
+}
+#cpus>tr>td{
+    width:71px;
+    padding:0;
+    padding-right:5px;
+}
+#cpus{
+    text-align: right;
+}
+table{
+    width:150px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+b{
+    display:block;
+    margin:5px;
+    margin-left:0;
+}
+canvas{
+    border:1px solid white;
+    display:block;
+    width:230px;
+    height:100px;
+}
+ul{
+    padding:0;
+    margin:0;
+    margin-left:35px;
+}
+li{
+    margin:2px;
+    padding:0;
+}

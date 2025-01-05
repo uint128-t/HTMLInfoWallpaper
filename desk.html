@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Desktop</title>
+        <script src="socket.io.min.js"></script>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <img src="desktop.png" draggable="false">
+        <div id="topc">
+            <b>CPU&nbsp;<span class="stat" id="cpu"></span></b>
+            <table>
+                <tbody id="cpus"></tbody>
+            </table>
+            <canvas id="cpugraph"></canvas>
+            CTX<span id="ctx" class="stat"></span>
+            INT<span id="int" class="stat"></span>
+            <b>MEMORY</b>
+            <div class="pbar" id="mem" style="margin-left:0;width:100%;">
+                <div class="bar"></div>
+                <div class="bartext"></div>
+            </div>
+            <b>DISKS</b>
+            <div id="disks"></div>
+            <b>NETWORK</b>
+            BS<span id="bs" class="stat"></span>
+            BR<span id="br" class="stat"></span>
+            <br>
+            PS<span id="ps" class="stat"></span>
+            PR<span id="pr" class="stat"></span>
+            <b>BATTERY</b>
+            <div class="pbar" id="bat" style="margin-left:0;width:100%;">
+                <div class="bar"></div>
+                <div class="bartext"></div>
+            </div>
+        </div>
+        <div id="corner">
+            <div style="padding-left:20px;">
+                <b>CONNECTIONS</b>
+                <table>
+                    <!--cannot create empty text node-->
+                    <tbody id="conns"><tr>
+                        <th style="width:200px;">IP</th>
+                        <th style="width:40px;">PORT</th>
+                        <th style="width:40px;">PID</th>
+                    </tr></tbody>
+                </table>
+            </div>
+            <div style="padding-left:20px;">
+                <b>USERS</b>
+                <table>
+                    <!--cannot create empty text node-->
+                    <tbody id="users"><tr>
+                        <th style="width:50px;">NAME</th>
+                        <th style="width:170px;">HOST</th>
+                        <th style="width:40px;">TERM</th>
+                        <th style="width:60px;">DUR</th>
+                    </tr></tbody>
+                </table>
+                <b>PROCESSES</b>
+                <table>
+                    <!--cannot create empty text node-->
+                    <tbody id="proc"><tr>
+                        <th style="width:180px;">NAME</th>
+                        <th style="width:40px;">PID</th>
+                        <th style="width:40px;">CPU</th>
+                        <th style="width:60px;">USR</th>
+                    </tr></tbody>
+                </table>
+            </div>
+            <div style="flex-grow:1;"></div>
+            <div style="margin-right:20px;">
+                <b>FANS</b>
+                <div id="fans"></div>
+            </div>
+            <div style="margin-right:20px;">
+                <b>TEMPERATURES</b>
+                <div id="temps"></div>
+            </div>
+            <div>
+                <div class="entry" style="margin-bottom:5px;">
+                    UPTIME:&nbsp;<span id="uptime" class="stat"></span>
+                </div>
+                <div class="entry">
+                    Hour
+                    <div class="pbar" id="hour">
+                        <div class="bar">.</div>
+                        <div class="bartext">.</div>
+                    </div>
+                </div>
+                <div class="entry">
+                    Minute
+                    <div class="pbar" id="minute">
+                        <div class="bar">.</div>
+                        <div class="bartext">.</div>
+                    </div>
+                </div>
+                <div id="time">.</div>
+                <div id="date">.</div>
+            </div>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>
