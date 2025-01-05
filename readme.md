@@ -15,3 +15,7 @@ You will need to find a way to set a webpage as a desktop wallpaper. Set `localh
 The background image displayed is to be named `desktop.png` and placed in the project folder.
 
 Required Python packages: `flask`, `flask-socketio`, `psutil`, `eventlet` or `gevent`
+
+To start server: `python3 server.py`
+
+Webpage is at `localhost:5000` (port can be changed)
