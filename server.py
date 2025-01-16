@@ -1,9 +1,20 @@
 import flask
 import flask_socketio
 import psutil
+import platform
 
 app = flask.Flask("wallpaper")
 socket = flask_socketio.SocketIO(app,async_mode="eventlet")
+pt = platform.uname()._asdict()
+cpum = platform.processor()
+if not cpum:
+    cinf = open("/proc/cpuinfo","r")
+    for ln in cinf:
+        if ln.startswith("model name"):
+            cpum = ln.split(":")[1].strip()
+            break
+    cinf.close()
+pt["processor"] = cpum
 
 @app.route("/")
 def index():
@@ -72,7 +83,7 @@ def info():
             "boot":psutil.boot_time(),
             "users":[x._asdict() for x in psutil.users()],
             "proc":ps[:5]
-        }
+        }|pt
         socket.emit("info",sendinfo)
         # print(sendinfo)
         socket.sleep(1) # interval

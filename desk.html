@@ -8,7 +8,10 @@
     <body>
         <img src="desktop.png" draggable="false">
         <div id="topc">
-            <b>CPU&nbsp;<span class="stat" id="cpu"></span></b>
+            <b>
+                CPU<br>
+                <div class="stat" id="cpu"></div>
+            </b>
             <table>
                 <tbody id="cpus"></tbody>
             </table>
@@ -42,7 +45,7 @@
                     <tbody id="conns"><tr>
                         <th style="width:200px;">IP</th>
                         <th style="width:40px;">PORT</th>
-                        <th style="width:40px;">PID</th>
+                        <th style="width:50px;">PID</th>
                     </tr></tbody>
                 </table>
             </div>
@@ -51,10 +54,10 @@
                 <table>
                     <!--cannot create empty text node-->
                     <tbody id="users"><tr>
-                        <th style="width:50px;">NAME</th>
-                        <th style="width:170px;">HOST</th>
+                        <th style="width:60px;">NAME</th>
+                        <th style="width:160px;">HOST</th>
                         <th style="width:40px;">TERM</th>
-                        <th style="width:60px;">DUR</th>
+                        <th style="width:70px;">DUR</th>
                     </tr></tbody>
                 </table>
                 <b>PROCESSES</b>
@@ -62,7 +65,7 @@
                     <!--cannot create empty text node-->
                     <tbody id="proc"><tr>
                         <th style="width:180px;">NAME</th>
-                        <th style="width:40px;">PID</th>
+                        <th style="width:50px;">PID</th>
                         <th style="width:40px;">CPU</th>
                         <th style="width:60px;">USR</th>
                     </tr></tbody>
@@ -72,6 +75,13 @@
             <div style="margin-right:20px;">
                 <b>FANS</b>
                 <div id="fans"></div>
+                <b>SYSTEM:<span id="sys" class="stat"></span></b>
+                <div style="padding-left:15px;">
+                    OS:<span id="os" class="stat"></span><br>
+                    NAME:<span id="name" class="stat"></span><br>
+                    RELEASE:<span id="release" class="stat"></span><br>
+                    MACHINE:<span id="machine" class="stat"></span><br>
+                </div>
             </div>
             <div style="margin-right:20px;">
                 <b>TEMPERATURES</b>

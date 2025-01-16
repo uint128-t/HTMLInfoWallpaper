@@ -64,7 +64,7 @@ socket.on("info",(data)=>{
         cell.style.backgroundColor = `rgba(0,255,0,${data.cpu[i]/100})`
         tcpu+=data.cpu[i];
     }
-    ID("cpu").textContent = `${(tcpu/data.cpu.length).toFixed(1).padStart(4,"0")}%`
+    ID("cpu").textContent = data.processor;
     ID("ctx").textContent = data.ctx;
     ID("int").textContent = data.intr;
     ID("mem").children[0].style.width = `${100*data.used/data.total}%`;
@@ -104,7 +104,7 @@ socket.on("info",(data)=>{
         let list = div.appendChild(document.createElement("ul"));
         for (let i = 0; i < data.temp[k].length; i++){
             let li = list.appendChild(document.createElement("li"));
-            li.textContent = `${data.temp[k][i].label || "?"}: ${data.temp[k][i].current.toFixed(2)} °C`;
+            li.textContent = `${data.temp[k][i].label || "?"}: ${data.temp[k][i].current.toFixed(2)}°C`;
         }
     }
     let secsleft = data.time;
@@ -161,6 +161,10 @@ socket.on("info",(data)=>{
         // above line for cpu usage on one core
         row.appendChild(document.createElement("td")).textContent = p.username;
     }
+    ID("os").textContent = data.system;
+    ID("name").textContent = data.node;
+    ID("release").textContent = data.release;
+    ID("machine").textContent = data.machine;
 })
 
 var cpuK = []; // CPU history for each core

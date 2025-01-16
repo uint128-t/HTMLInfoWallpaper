@@ -117,9 +117,14 @@ canvas{
 ul{
     padding:0;
     margin:0;
-    margin-left:35px;
+    margin-left:25px;
 }
 li{
     margin:2px;
     padding:0;
+}
+#cpu{
+    font-size:10px;
+    text-overflow: clip;
+    width:230px;
 }
