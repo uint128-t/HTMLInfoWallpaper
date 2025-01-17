@@ -60,7 +60,7 @@ socket.on("info",(data)=>{
             row=cpus.appendChild(document.createElement("tr"));
         }
         let cell = row.appendChild(document.createElement("td"))
-        cell.textContent = `${data.cpu[i].toFixed(1)}   %\n${data.freq[i].toFixed(0)} MHz`;
+        cell.innerText = `${data.cpu[i].toFixed(1)}   %\n${data.freq[i].toFixed(0)} MHz`;
         cell.style.backgroundColor = `rgba(0,255,0,${data.cpu[i]/100})`
         tcpu+=data.cpu[i];
     }
