@@ -19,3 +19,5 @@ Required Python packages: `flask`, `flask-socketio`, `psutil`, `eventlet` or `ge
 To start server: `python3 server.py`
 
 Webpage is at `localhost:5000` (port can be changed)
+
+Preview:![Screenshot_20250118_144507](https://github.com/user-attachments/assets/31202baa-2d76-4c06-bbbb-85cc63529abc)
