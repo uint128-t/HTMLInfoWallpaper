@@ -1,0 +1,13 @@
+[Unit]
+Description=Wallpaper Service
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=<path>
+ExecStart=/usr/bin/python3 <path>/server.py
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
