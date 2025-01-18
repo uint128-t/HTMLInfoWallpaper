@@ -2,6 +2,10 @@ import flask
 import flask_socketio
 import psutil
 import platform
+import time
+import math
+
+INTERVAL = 1
 
 app = flask.Flask("wallpaper")
 socket = flask_socketio.SocketIO(app,async_mode="eventlet")
@@ -25,10 +29,16 @@ def send(path):
     return flask.send_from_directory(".",path)
 
 def info():
+    lastupdate = math.floor(time.monotonic())+1
+    lbs = psutil.net_io_counters().bytes_sent
+    lbr = psutil.net_io_counters().bytes_recv
+    ldr = psutil.disk_io_counters().read_bytes
+    lwr = psutil.disk_io_counters().write_bytes
     while True:
         cs = psutil.cpu_stats()
         vm = psutil.virtual_memory()
         nio = psutil.net_io_counters()
+        drw = psutil.disk_io_counters()
         bat = psutil.sensors_battery()
         disks = []
         conn = []
@@ -39,7 +49,7 @@ def info():
         for d in psutil.disk_partitions():
             du = psutil.disk_usage(d.mountpoint)
             disks.append({
-                "device":d.device,
+                "device":d.device.split("/")[-1], # on linux systems remove /dev
                 "mountpoint":d.mountpoint,
                 "fstype":d.fstype,
                 "opts":d.opts,
@@ -70,10 +80,18 @@ def info():
             "used":vm.used,
             "free":vm.free,
             "disks":disks,
-            "nsent":nio.bytes_sent,
-            "nrecv":nio.bytes_recv,
-            "psent":nio.packets_sent,
-            "precv":nio.packets_recv,
+            "netbytesent":nio.bytes_sent,
+            "netbyterecv":nio.bytes_recv,
+            "netuprate":(nio.bytes_sent-lbs)/INTERVAL,
+            "netdownrate":(nio.bytes_recv-lbr)/INTERVAL,
+            "netpacksent":nio.packets_sent,
+            "netpackrecv":nio.packets_recv,
+            "diskbyteread":drw.read_bytes,
+            "diskbytewrite":drw.write_bytes,
+            "diskreadrate":(drw.read_bytes-ldr)/INTERVAL,
+            "diskwriterate":(drw.write_bytes-lwr)/INTERVAL,
+            "diskreads":drw.read_count,
+            "diskwrites":drw.write_count,
             "conn":conn,
             "temp":temp,
             "fan":{i:[v._asdict() for v in x] for i,x in psutil.sensors_fans().items()},
@@ -82,11 +100,15 @@ def info():
             "plugged":bat.power_plugged,
             "boot":psutil.boot_time(),
             "users":[x._asdict() for x in psutil.users()],
-            "proc":ps[:5]
+            "proc":ps[:5],
         }|pt
+        lbs = nio.bytes_sent
+        lbr = nio.bytes_recv
+        ldr = drw.read_bytes
+        lwr = drw.write_bytes
         socket.emit("info",sendinfo)
-        # print(sendinfo)
-        socket.sleep(1) # interval
+        socket.sleep(lastupdate+INTERVAL-time.monotonic()) # more accurate timing
+        lastupdate+=INTERVAL
 
 socket.start_background_task(target=info)
 socket.run(app,host="0.0.0.0",port=5000) # this can be changed, ports below 1024 require root

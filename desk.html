@@ -8,33 +8,90 @@
     <body>
         <img src="desktop.png" draggable="false">
         <div id="topc">
-            <b>
-                CPU<br>
-                <div class="stat" id="cpu"></div>
-            </b>
-            <table>
-                <tbody id="cpus"></tbody>
-            </table>
-            <canvas id="cpugraph"></canvas>
-            CTX<span id="ctx" class="stat"></span>
-            INT<span id="int" class="stat"></span>
-            <b>MEMORY</b>
-            <div class="pbar" id="mem" style="margin-left:0;width:100%;">
-                <div class="bar"></div>
-                <div class="bartext"></div>
+            <div>
+                <div style="display:flex;align-items:end;">
+                    <b>NETWORK</b>
+                    <div style="flex-grow:1;"></div>
+                    <div class="stat" id="ngraphm"></div>
+                </div>
+                <canvas id="ngraph"></canvas>
+                <div style="display:flex;flex-flow:row nowrap;">
+                    <div style="flex:1;">
+                        <div class="col" style="background-color: #00F;"></div>
+                        DOWNLOAD
+                        <br>
+                        <span id="netdownrate" class="stat"></span>
+                        <br>
+                        BR<span id="netbyterecv" class="stat"></span>
+                        <br>
+                        PR<span id="netpackrecv" class="stat"></span>
+                    </div>
+                    <div style="flex:1;">
+                        <div class="col" style="background-color: #F00;"></div>
+                        UPLOAD
+                        <br>
+                        <span id="netuprate" class="stat"></span>
+                        <br>
+                        BS<span id="netbytesent" class="stat"></span>
+                        <br>
+                        PS<span id="netpacksent" class="stat"></span>
+                    </div>
+                </div>
+                <br>
+                <div style="display:flex;align-items:end;">
+                    <b>DISK</b>
+                    <div style="flex-grow:1;"></div>
+                    <div class="stat" id="dgraphm"></div>
+                </div>
+                <canvas id="dgraph"></canvas>
+                <div style="display:flex;flex-flow:row nowrap;">
+                    <div style="flex:1;">
+                        <div class="col" style="background-color: #00F;"></div>
+                        READ
+                        <br>
+                        <span id="diskreadrate" class="stat"></span>
+                        <br>
+                        BR<span id="diskbyteread" class="stat"></span>
+                        <br>
+                        RD<span id="diskreads" class="stat"></span>
+                    </div>
+                    <div style="flex:1;">
+                        <div class="col" style="background-color: #F00;"></div>
+                        WRITE
+                        <br>
+                        <span id="diskwriterate" class="stat"></span>
+                        <br>
+                        BW<span id="diskbytewrite" class="stat"></span>
+                        <br>
+                        WR<span id="diskwrites" class="stat"></span>
+                    </div>
+                </div>
             </div>
-            <b>DISKS</b>
-            <div id="disks"></div>
-            <b>NETWORK</b>
-            BS<span id="bs" class="stat"></span>
-            BR<span id="br" class="stat"></span>
-            <br>
-            PS<span id="ps" class="stat"></span>
-            PR<span id="pr" class="stat"></span>
-            <b>BATTERY</b>
-            <div class="pbar" id="bat" style="margin-left:0;width:100%;">
-                <div class="bar"></div>
-                <div class="bartext"></div>
+            <div style="width:20px;"></div>
+            <div>
+                <b>
+                    CPU<br>
+                    <div class="stat" id="cpu"></div>
+                </b>
+                <table>
+                    <tbody id="cpus"></tbody>
+                </table>
+                <div class="stat" style="position:absolute;margin-left:10px;margin-top:10px;" id="cpup"></div>
+                <canvas id="cpugraph"></canvas>
+                CTX<span id="ctx" class="stat"></span>
+                INT<span id="int" class="stat"></span>
+                <b>MEMORY</b>
+                <div class="pbar" id="mem" style="margin-left:0;width:100%;">
+                    <div class="bar"></div>
+                    <div class="bartext"></div>
+                </div>
+                <b>DISKS</b>
+                <div id="disks"></div>
+                <b>BATTERY</b>
+                <div class="pbar" id="bat" style="margin-left:0;width:100%;">
+                    <div class="bar"></div>
+                    <div class="bartext"></div>
+                </div>
             </div>
         </div>
         <div id="corner">
@@ -109,6 +166,7 @@
                 <div id="date">.</div>
             </div>
         </div>
+        <script src="graph.js"></script>
         <script src="script.js"></script>
     </body>
 </html>

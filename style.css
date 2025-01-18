@@ -5,6 +5,8 @@
     /* outline:1px solid white; */
     padding:10px;
     padding-top:3px;
+    display:flex;
+    flex-flow:row nowrap;
 }
 body{
     background-color: white;
@@ -127,4 +129,10 @@ li{
     font-size:10px;
     text-overflow: clip;
     width:230px;
+}
+.col{
+    display:inline-block;
+    width:10px;
+    height:10px;
+    line-height:1em;
 }

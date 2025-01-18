@@ -12,13 +12,15 @@ var conns = ID("conns");
 var fans = ID("fans");
 var users = ID("users");
 var proc = ID("proc");
+var ngraphm = ID("ngraphm");
+var dgraphm = ID("dgraphm");
+var cpup = ID("cpup");
 const startD = 7*60*60*1000;
 const endD = 22*60*60*1000;
 function utime(){
     let d = new Date();
     let ds = new Date();
     ds.setHours(0,0,0,0);
-    let secsS = d-ds;
     let time = d.toLocaleTimeString();
     let day = d.toLocaleDateString("en-US",{weekday:'long', year:'numeric', month:'long', day:'numeric' });
     if (time!=lt){
@@ -51,7 +53,7 @@ const COLUMNS = 3;
 var uptime = Date.now()/1000; // temporary value
 var socket = io();
 socket.on("info",(data)=>{
-    console.log(data);
+    // CPU GRID
     cpus.replaceChildren();
     let row;
     let tcpu = 0;
@@ -64,9 +66,13 @@ socket.on("info",(data)=>{
         cell.style.backgroundColor = `rgba(0,255,0,${data.cpu[i]/100})`
         tcpu+=data.cpu[i];
     }
+
+    // CPU INFO
     ID("cpu").textContent = data.processor;
     ID("ctx").textContent = data.ctx;
     ID("int").textContent = data.intr;
+
+    // MEMORY
     ID("mem").children[0].style.width = `${100*data.used/data.total}%`;
     let disp = `${Math.floor(100*data.used/data.total)}% - ${(data.used/1024/1024/1024).toFixed(3)} GiB`;
     ID("mem").children[0].textContent = disp;
@@ -74,6 +80,7 @@ socket.on("info",(data)=>{
     
     uptime = data.boot;
 
+    // DISKS
     disks.replaceChildren();
     for (let i = 0; i < data.disks.length; i++){
         let pb = document.createElement("div");
@@ -86,17 +93,32 @@ socket.on("info",(data)=>{
         let ptext = pb.appendChild(document.createElement("div"));
         ptext.classList.add("bartext");
 
-        let disp = `${data.disks[i].device} ${(data.disks[i].used/1024/1024/1024).toFixed(1)}/${(data.disks[i].total/1024/1024/1024).toFixed(1)} ${(data.disks[i].used/data.disks[i].total*100).toFixed(0)}%`;
+        let disp = `${data.disks[i].device} ${data.disks[i].mountpoint} ${(data.disks[i].used/1024/1024/1024).toFixed(1)}/${(data.disks[i].total/1024/1024/1024).toFixed(1)} ${(data.disks[i].used/data.disks[i].total*100).toFixed(0)}%`;
         ptext.textContent = disp;
         pbar.textContent = disp;
         pbar.style.width = `${100*data.disks[i].used/data.disks[i].total}%`;
         disks.appendChild(pb);
     }
-    drawGraph(data.cpu,tcpu);
-    ID("bs").textContent = `${Math.floor(data.nsent/1024/1024)} MiB`;
-    ID("br").textContent = `${Math.floor(data.nrecv/1024/1024)} MiB`;
-    ID("ps").textContent = data.psent;
-    ID("pr").textContent = data.precv;
+
+    // GRAPHS
+    drawGraph(data.cpu,tcpu,data.netuprate,data.netdownrate,data.diskreadrate,data.diskwriterate);
+
+    // NETWORK & DISK
+    ID("netbytesent").textContent = `${Math.floor(data.netbytesent/1024/1024)} MiB`;
+    ID("netbyterecv").textContent = `${Math.floor(data.netbyterecv/1024/1024)} MiB`;
+    ID("netpacksent").textContent = data.netpacksent;
+    ID("netpackrecv").textContent = data.netpackrecv;
+    ID("netdownrate").textContent = `${autounit(data.netdownrate,2)}/s`;
+    ID("netuprate").textContent = `${autounit(data.netuprate,2)}/s`;
+
+    ID("diskbyteread").textContent = `${Math.floor(data.diskbyteread/1024/1024)} MiB`;
+    ID("diskbytewrite").textContent = `${Math.floor(data.diskbytewrite/1024/1024)} MiB`;
+    ID("diskreads").textContent = data.diskreads;
+    ID("diskwrites").textContent = data.diskwrites;
+    ID("diskreadrate").textContent = `${autounit(data.diskreadrate,2)}/s`;
+    ID("diskwriterate").textContent = `${autounit(data.diskwriterate,2)}/s`;
+
+    // TEMPERATURES
     temps.replaceChildren();
     for (let k in data.temp){
         let div = temps.appendChild(document.createElement("div"));
@@ -107,6 +129,8 @@ socket.on("info",(data)=>{
             li.textContent = `${data.temp[k][i].label || "?"}: ${data.temp[k][i].current.toFixed(2)}°C`;
         }
     }
+
+    // BATTERY
     let secsleft = data.time;
     let minleft = (secsleft/60%60).toFixed(0).padStart(2,"0");
     let hourleft = (secsleft/3600).toFixed(0);
@@ -120,6 +144,7 @@ socket.on("info",(data)=>{
     bat.children[0].textContent = dt;
     bat.children[1].textContent = dt;
 
+    // CONNECTIONS
     conns.replaceChildren(conns.firstChild);
     for (let con of data.conn){
         let row = conns.appendChild(document.createElement("tr"));
@@ -127,6 +152,8 @@ socket.on("info",(data)=>{
         row.appendChild(document.createElement("td")).textContent = con.dp;
         row.appendChild(document.createElement("td")).textContent = con.fd;
     }
+
+    // FANS
     fans.replaceChildren();
     for (let k in data.fan){
         let div = fans.appendChild(document.createElement("div"));
@@ -138,6 +165,7 @@ socket.on("info",(data)=>{
         }
     }
     
+    // USERS
     users.replaceChildren(users.firstChild);
     for (let user of data.users){
         let row = users.appendChild(document.createElement("tr"));
@@ -145,10 +173,10 @@ socket.on("info",(data)=>{
         row.appendChild(document.createElement("td")).textContent = user.name;
         row.appendChild(document.createElement("td")).textContent = user.host;
         row.appendChild(document.createElement("td")).textContent = user.terminal;
-        console.log(dur);
         row.appendChild(document.createElement("td")).textContent = `${Math.floor(dur/3600)}:${String(Math.floor(dur/60%60)).padStart(2,"0")}:${String(Math.floor(dur%60)).padStart(2,"0")}`;
     }
 
+    // PROCCESSES
     proc.replaceChildren(proc.firstChild);
     for (let p of data.proc){
         let row = proc.appendChild(document.createElement("tr"));
@@ -161,57 +189,45 @@ socket.on("info",(data)=>{
         // above line for cpu usage on one core
         row.appendChild(document.createElement("td")).textContent = p.username;
     }
+
+    // SYSTEM
     ID("os").textContent = data.system;
     ID("name").textContent = data.node;
     ID("release").textContent = data.release;
     ID("machine").textContent = data.machine;
 })
 
-var cpuK = []; // CPU history for each core
-var cpuD = []; // Graph to draw
-var graph = document.getElementById("cpugraph");
-graph.width = 230*devicePixelRatio;
-graph.height = 100*devicePixelRatio;
-var cpug = graph.getContext("2d");
-var cpuI = 0;
-const VALS = 24;
-const PIXELS = 10;
+var cgraph = document.getElementById("cpugraph");
+var ngraph = document.getElementById("ngraph");
+var dgraph = document.getElementById("dgraph");
+var cpug = null;
+var netg = new ResourceGraph(ngraph,2,["#00F","#F00"]);
+var disg = new ResourceGraph(dgraph,2,["#00F","#F00"]);
 
-function drawGraph(cpu,tcpu){
-    if (cpuK.length!=cpu.length){
-        cpuK = [];
-        cpuD = [];
-        for (let i = 0; i < cpu.length; i++){
-            cpuK.push(Array(VALS).fill(0));
-            cpuD.push(Array(VALS).fill(0));
+function drawGraph(cpu,tcpu,ns,nr,dr,dw){
+    if (cpug==null){
+        let col = [];
+        for (let i=0;i<cpu.length;i++){
+            col.push(`hsl(${i*360/cpu.length},100%,50%)`);
         }
+        cpug = new ResourceGraph(cgraph,cpu.length,col);
     }
-    for (let i = 0; i < cpu.length; i++){
-        cpuK[i][cpuI%VALS] = cpu[i];
-        cpuD[i][cpuI%VALS] = cpu[i];
-        if (i>0){
-            cpuD[i][cpuI%VALS] += cpuD[i-1][cpuI%VALS];
-        }
+    netg.update([nr,ns]);
+    let nscl = netg.autoscale();
+    netg.render(nscl)
+    ngraphm.textContent = `${autounit(nscl)}/s`;
+
+    disg.update([dr,dw]);
+    let dscl = disg.autoscale();
+    disg.render(dscl);
+    dgraphm.textContent = `${autounit(dscl)}/s`;
+
+    let cpusum = Array(cpu.length).fill(cpu[0]);
+    for (let i=1;i<cpu.length;i++){
+        cpusum[i] = cpusum[i-1]+cpu[i];
     }
-    cpuI = (cpuI+1)%VALS;
-    cpug.clearRect(0,0,230*devicePixelRatio,100*devicePixelRatio);
-    for (let i=0;i<cpuD.length;i++){
-        // for each core
-        for (let j=1;j<VALS;j++){
-            cpug.beginPath();
-            cpug.moveTo(devicePixelRatio*(j*PIXELS-PIXELS),Math.round(devicePixelRatio*(100-(cpuD[i][(j-1+cpuI)%VALS]/cpuD.length)*1.5)));
-            cpug.lineTo(devicePixelRatio*j*PIXELS,Math.round(devicePixelRatio*(100-(cpuD[i][(j+cpuI)%VALS]/cpuD.length)*1.5)));
-            cpug.strokeStyle = `hsl(${i*360/cpuD.length},100%,50%)`; // change to white for one color only
-            cpug.strokeWidth = 1;
-            cpug.stroke();
-        }
-    }
-    cpug.font = `${15*devicePixelRatio}px monospace`
-    cpug.fillStyle = "white";
-    cpug.fillText(`${(tcpu/cpu.length).toFixed(2)}%`,devicePixelRatio*10,devicePixelRatio*20);
+
+    cpug.update(cpusum);
+    cpug.render(100*cpu.length);
+    cpup.textContent = `${(tcpu/cpu.length).toFixed(2)}%`;
 }
-
-onresize = ()=>{
-    graph.width = 230*devicePixelRatio;
-    graph.height = 100*devicePixelRatio;
-};
