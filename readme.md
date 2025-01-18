@@ -24,3 +24,5 @@ Preview:![Screenshot_20250118_144507](https://github.com/user-attachments/assets
 
 Supported Operating Systems: Linux, Windows (Untested)
 May or may not work on MacOS
+
+On Linux, you can make this run on startup by adding it as a systemd service, see `wallpaper.service`.
