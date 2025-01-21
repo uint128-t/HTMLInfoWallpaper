@@ -15,8 +15,6 @@ var proc = ID("proc");
 var ngraphm = ID("ngraphm");
 var dgraphm = ID("dgraphm");
 var cpup = ID("cpup");
-const startD = 7*60*60*1000;
-const endD = 22*60*60*1000;
 function utime(){
     let d = new Date();
     let ds = new Date();
@@ -49,7 +47,6 @@ function utime(){
 utime();
 
 var cpus = document.getElementById("cpus");
-const COLUMNS = 3;
 var uptime = Date.now()/1000; // temporary value
 var socket = io();
 socket.on("info",(data)=>{
@@ -93,7 +90,8 @@ socket.on("info",(data)=>{
         let ptext = pb.appendChild(document.createElement("div"));
         ptext.classList.add("bartext");
 
-        let disp = `${data.disks[i].device} ${data.disks[i].mountpoint} ${(data.disks[i].used/1024/1024/1024).toFixed(1)}/${(data.disks[i].total/1024/1024/1024).toFixed(1)} ${(data.disks[i].used/data.disks[i].total*100).toFixed(0)}%`;
+        // Add ${data.disks[i].device} for device  
+        let disp = `${data.disks[i].mountpoint} ${(data.disks[i].used/1024/1024/1024).toFixed(1)}/${(data.disks[i].total/1024/1024/1024).toFixed(1)} ${(data.disks[i].used/data.disks[i].total*100).toFixed(0)}%`;
         ptext.textContent = disp;
         pbar.textContent = disp;
         pbar.style.width = `${100*data.disks[i].used/data.disks[i].total}%`;
@@ -150,7 +148,7 @@ socket.on("info",(data)=>{
         let row = conns.appendChild(document.createElement("tr"));
         row.appendChild(document.createElement("td")).textContent = con.dest;
         row.appendChild(document.createElement("td")).textContent = con.dp;
-        row.appendChild(document.createElement("td")).textContent = con.fd;
+        row.appendChild(document.createElement("td")).textContent = con.pid;
     }
 
     // FANS
@@ -201,8 +199,8 @@ var cgraph = document.getElementById("cpugraph");
 var ngraph = document.getElementById("ngraph");
 var dgraph = document.getElementById("dgraph");
 var cpug = null;
-var netg = new ResourceGraph(ngraph,2,["#00F","#F00"]);
-var disg = new ResourceGraph(dgraph,2,["#00F","#F00"]);
+var netg = new ResourceGraph(ngraph,2,[COL_NETDOWN,COL_NETUP]);
+var disg = new ResourceGraph(dgraph,2,[COL_DISREAD,COL_DISWRITE]);
 
 function drawGraph(cpu,tcpu,ns,nr,dr,dw){
     if (cpug==null){

@@ -1,11 +1,8 @@
-const VALS = 47;
-const PIXELS = 5;
-const UNITS = ["B", "KiB", "MiB", "GiB", "TiB"];
 class ResourceGraph{
     constructor(canvas,dc,dcol){
         this.canvas = canvas;
-        this.canvas.width = 230*devicePixelRatio;
-        this.canvas.height = 100*devicePixelRatio;
+        this.canvas.width = CANVAS_W*devicePixelRatio;
+        this.canvas.height = CANVAS_H*devicePixelRatio;
         this.ctx = canvas.getContext("2d");
         this.ctx.scale(devicePixelRatio, devicePixelRatio);
         this.dc = dc;
@@ -16,8 +13,8 @@ class ResourceGraph{
         this.dcol = dcol;
         this.index = 0;
         addEventListener("resize",()=>{
-            this.canvas.width = 230*devicePixelRatio;
-            this.canvas.height = 100*devicePixelRatio;
+            this.canvas.width = CANVAS_W*devicePixelRatio;
+            this.canvas.height = CANVAS_H*devicePixelRatio;
             console.log("scle")
             this.ctx.scale(devicePixelRatio, devicePixelRatio);
         });
@@ -29,8 +26,8 @@ class ResourceGraph{
             this.ctx.strokeStyle = this.dcol[s];
             this.ctx.lineWidth = 1;
             for (let i=0;i<VALS-1;i++){
-                this.ctx.moveTo(i*PIXELS,100-100*this.data[s][(i+this.index)%VALS]/scale);
-                this.ctx.lineTo((i+1)*PIXELS,100-100*this.data[s][(i+this.index+1)%VALS]/scale);
+                this.ctx.moveTo(i*PIXELS,CANVAS_H-CANVAS_H*this.data[s][(i+this.index)%VALS]/scale);
+                this.ctx.lineTo((i+1)*PIXELS,CANVAS_H-CANVAS_H*this.data[s][(i+this.index+1)%VALS]/scale);
             }
             this.ctx.stroke();
         }

@@ -37,7 +37,6 @@ def info():
     while True:
         cs = psutil.cpu_stats()
         vm = psutil.virtual_memory()
-        nio = psutil.net_io_counters()
         drw = psutil.disk_io_counters()
         bat = psutil.sensors_battery()
         disks = []
@@ -57,10 +56,10 @@ def info():
                 "used":du.used
             })
         for c in psutil.net_connections():
-            if type(c.raddr) == tuple:
+            if not c.raddr:
                 continue
             if c.raddr.ip != "127.0.0.1":
-                if (c.raddr.ip,c.raddr.port) not in kn: # remove duplicates
+                if (c.raddr.ip,c.raddr.port,c.pid) not in kn: # remove duplicates
                     conn.append({
                         "fd":c.fd,
                         "family":int(c.family),
@@ -68,9 +67,20 @@ def info():
                         "dest":c.raddr.ip,
                         "dp":c.raddr.port,
                         "status":c.status,
-                        "pid":c.pid or "Unknown"
+                        "pid":c.pid
                     })
-                    kn.add((c.raddr.ip,c.raddr.port))
+                    kn.add((c.raddr.ip,c.raddr.port,c.pid))
+        netbytesent = 0
+        netbyterecv = 0
+        netpacksent = 0
+        netpackrecv = 0
+        nioc = psutil.net_io_counters(pernic=True)
+        for c in nioc:
+            if c!="lo": # exclude loopback
+                netbytesent+=nioc[c].bytes_sent
+                netbyterecv+=nioc[c].bytes_recv
+                netpacksent+=nioc[c].packets_sent
+                netpackrecv+=nioc[c].packets_recv
         sendinfo = {
             "cpu":psutil.cpu_percent(percpu=True),
             "ctx":cs.ctx_switches,
@@ -80,12 +90,12 @@ def info():
             "used":vm.used,
             "free":vm.free,
             "disks":disks,
-            "netbytesent":nio.bytes_sent,
-            "netbyterecv":nio.bytes_recv,
-            "netuprate":(nio.bytes_sent-lbs)/INTERVAL,
-            "netdownrate":(nio.bytes_recv-lbr)/INTERVAL,
-            "netpacksent":nio.packets_sent,
-            "netpackrecv":nio.packets_recv,
+            "netbytesent":netbytesent,
+            "netbyterecv":netbyterecv,
+            "netuprate":(netbytesent-lbs)/INTERVAL,
+            "netdownrate":(netbyterecv-lbr)/INTERVAL,
+            "netpacksent":netpacksent,
+            "netpackrecv":netpackrecv,
             "diskbyteread":drw.read_bytes,
             "diskbytewrite":drw.write_bytes,
             "diskreadrate":(drw.read_bytes-ldr)/INTERVAL,
@@ -102,8 +112,8 @@ def info():
             "users":[x._asdict() for x in psutil.users()],
             "proc":ps[:5],
         }|pt
-        lbs = nio.bytes_sent
-        lbr = nio.bytes_recv
+        lbs = netbytesent
+        lbr = netbyterecv
         ldr = drw.read_bytes
         lwr = drw.write_bytes
         socket.emit("info",sendinfo)

@@ -1,0 +1,10 @@
+const VALS = 47;
+const PIXELS = 5;
+const UNITS = ["B", "KiB", "MiB", "GiB", "TiB"];
+const CANVAS_W = 230;
+const CANVAS_H = 100;
+const COL_NETDOWN = "#0000FF"
+const COL_NETUP = "#FF0000"
+const COL_DISREAD = "#0000FF"
+const COL_DISWRITE = "#FF0000"
+const COLUMNS = 3; // CPU GRID COLUMNS
