@@ -4,6 +4,7 @@ import psutil
 import platform
 import time
 import math
+import ipaddress
 
 INTERVAL = 1
 
@@ -39,6 +40,15 @@ def info():
         vm = psutil.virtual_memory()
         drw = psutil.disk_io_counters()
         bat = psutil.sensors_battery()
+        addresses = []
+        for iface,addrs in psutil.net_if_addrs().items():
+            for addr in addrs:
+                if addr.family==psutil.AF_LINK:
+                    continue
+                a = ipaddress.ip_address(addr.address)
+                if a.is_unspecified or a.is_loopback or a.is_link_local: # exclude addresses not marked as "global" in "ip a"
+                    continue
+                addresses.append(addr.address)
         disks = []
         conn = []
         ps = [p.info for p in psutil.process_iter(["cpu_percent","name","pid","username",])]
@@ -111,6 +121,7 @@ def info():
             "boot":psutil.boot_time(),
             "users":[x._asdict() for x in psutil.users()],
             "proc":ps[:5],
+            "addr":addresses
         }|pt
         lbs = netbytesent
         lbr = netbyterecv

@@ -15,6 +15,7 @@ var proc = ID("proc");
 var ngraphm = ID("ngraphm");
 var dgraphm = ID("dgraphm");
 var cpup = ID("cpup");
+var address = ID("address");
 function utime(){
     let d = new Date();
     let ds = new Date();
@@ -84,7 +85,7 @@ socket.on("info",(data)=>{
         
         pb.classList.add("pbar");
         pb.style.marginLeft = "0";
-        pb.style.width = "100%";
+        pb.style.width = "235px";
         let pbar = pb.appendChild(document.createElement("div"));
         pbar.classList.add("bar");
         let ptext = pb.appendChild(document.createElement("div"));
@@ -115,6 +116,16 @@ socket.on("info",(data)=>{
     ID("diskwrites").textContent = data.diskwrites;
     ID("diskreadrate").textContent = `${autounit(data.diskreadrate,2)}/s`;
     ID("diskwriterate").textContent = `${autounit(data.diskwriterate,2)}/s`;
+
+
+    // ADDRESSES
+    address.replaceChildren();
+    console.log(data.addr);
+    for (let ar of data.addr) {
+        let alx=address.appendChild(document.createElement("li"));
+        alx.classList.add("ipa");
+        alx.textContent = ar;
+    }
 
     // TEMPERATURES
     temps.replaceChildren();
