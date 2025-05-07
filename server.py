@@ -132,4 +132,4 @@ def info():
         lastupdate+=INTERVAL
 
 socket.start_background_task(target=info)
-socket.run(app,host="0.0.0.0",port=5000) # this can be changed, ports below 1024 require root
+socket.run(app,host="127.0.0.1",port=5000) # this can be changed, ports below 1024 require root
